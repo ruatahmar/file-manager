@@ -6,15 +6,28 @@ from watchdog.events import FileSystemEventHandler
 import shutil
 
 downloads_dir=r"C:\Users\VICTUS\Downloads"
-audio_dir=r"C:\Users\VICTUS\Downloads\_downloaded audio"
-torrents_dir=r"C:\Users\VICTUS\Downloads\_torrents"
-videos_dir=r"C:\Users\VICTUS\Downloads\_downloaded videos"
-pics_dir=r"C:\Users\VICTUS\Downloads\_downloaded pics"
-docs_dir=r"C:\Users\VICTUS\Downloads\_documents"
-zip_dir=r"C:\Users\VICTUS\Downloads\_zip files"
+audio_dir=r"C:\Users\VICTUS\downloads sorted\_downloaded audio"
+torrents_dir=r"C:\Users\VICTUS\downloads sorted\_torrents"
+videos_dir=r"C:\Users\VICTUS\downloads sorted\_downloaded videos"
+pics_dir=r"C:\Users\VICTUS\downloads sorted\_downloaded pics"
+docs_dir=r"C:\Users\VICTUS\downloads sorted\_documents"
+zip_dir=r"C:\Users\VICTUS\downloads sorted\_zip files"
 
-
+def make_unique(name,dest):
+    base, ext = os.path.splitext(name)
+    counter = 1
+    new_name = f"{base}_{counter}{ext}"
+    # Keep generating new names until finding one that does not exist
+    while os.path.exists(os.path.join(dest, new_name)):
+        counter += 1
+        new_name = f"{base}_{counter}{ext}"
+    return new_name
 def move(dest,entry,name):
+    name_to_check=dest+"/"+name
+    name_exists=os.path.exists(name_to_check)
+    if name_exists:
+        new_name=make_unique(name,dest)
+        os.rename(entry,new_name)
     shutil.move(entry,dest)
 
 class Event_Changer(FileSystemEventHandler):
