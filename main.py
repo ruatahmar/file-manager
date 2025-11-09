@@ -16,18 +16,24 @@ zip_dir=r"C:\Users\VICTUS\downloads sorted\_zip files"
 def make_unique(name,dest):
     base, ext = os.path.splitext(name)
     counter = 1
+    print(base,ext)
     new_name = f"{base}_{counter}{ext}"
-    # Keep generating new names until finding one that does not exist
-    while os.path.exists(os.path.join(dest, new_name)):
+    name_to_check=os.path.join(dest, new_name)
+    while os.path.exists(name_to_check):
         counter += 1
         new_name = f"{base}_{counter}{ext}"
+        name_to_check=os.path.join(dest, new_name)
     return new_name
+
 def move(dest,entry,name):
-    name_to_check=dest+"/"+name
+    name_to_check=os.path.join(dest, name)
     name_exists=os.path.exists(name_to_check)
     if name_exists:
-        new_name=make_unique(name,dest)
-        os.rename(entry,new_name)
+        new_name = make_unique(name, dest)
+        new_name_path = os.path.join(dest, new_name)
+        os.rename(entry, new_name_path)
+        shutil.move(new_name_path, dest)
+        return None
     shutil.move(entry,dest)
 
 class Event_Changer(FileSystemEventHandler):
@@ -56,7 +62,7 @@ class Event_Changer(FileSystemEventHandler):
                         dest=zip_dir
                         move(dest,entry.path,name)
 
-if __name__ == "__main__":
+def  main():
     logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s - %(message)s',
                         datefmt='%Y-%m-%d %H:%M:%S')
@@ -71,3 +77,7 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         observer.stop()
     observer.join()
+
+
+if __name__ == "__main__":
+    main()
